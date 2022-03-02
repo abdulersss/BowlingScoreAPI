@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BowlingScore.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/games")]
     [ApiController]
     public class GamesController : ControllerBase
     {
@@ -58,7 +58,7 @@ namespace BowlingScore.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put([FromBody] UpdateGameDto dto)
+        public async Task<ActionResult> PutGame([FromBody] UpdateGameDto dto)
         {
             var result = await _gameService.UpdateGame(dto);
             if (result == default)
@@ -68,11 +68,13 @@ namespace BowlingScore.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteGame(int id)
         {
+            await _gameService.DeleteGame(id);
+            return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("{gameId}/shots")]
         public async Task<ActionResult<IEnumerable<FrameRecord>>> GetFrames()
         {
             var result = await _frameService.GetFrames();
@@ -82,7 +84,7 @@ namespace BowlingScore.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{gameId}/shots/{id}")]
         public async Task<ActionResult<FrameRecord>> GetFrame(int id)
         {
             var result = await _frameService.GetFrame(id);
@@ -92,19 +94,25 @@ namespace BowlingScore.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> PostFrame([FromBody] string value)
+        [HttpPost("{gameId}/shots")]
+        public async Task<ActionResult> PostFrame([FromBody] CreateFrameDto dto)
         {
+            await _frameService.CreateFrame(dto);
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult> PutFrame(int id, [FromBody] string value)
+        [HttpPut("{gameId}/shots/{id}")]
+        public async Task<ActionResult> PutFrame([FromBody] UpdateFrameDto dto)
         {
+            await _frameService.UpdateFrame(dto);
+            return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{gameId}/shots/{id}")]
         public async Task<ActionResult> DeleteFrame(int id)
         {
+            await _frameService.DeleteFrame(id);
+            return Ok();
         }
     }
 }
